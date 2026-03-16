@@ -14,7 +14,7 @@ dotenv.config();
 const app: Application = express();
 app.use(cors({
     origin: ['http://localhost:8100',
-        'http://192.168.68.106:8100'],
+        'http://192.168.68.107:8100'],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
 }));
