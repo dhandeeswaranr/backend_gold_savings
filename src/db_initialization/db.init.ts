@@ -1,9 +1,12 @@
 import pool from '../db';
 
 const initDB = async () => {
+    await pool.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
+
     await pool.query(
         `CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY, 
+        id SERIAL PRIMARY KEY,
+        user_id UUID DEFAULT uuid_generate_v4() UNIQUE, 
         name VARCHAR(50) NOT NULL,
         email VARCHAR(100) UNIQUE NOT NULL,
         phone VARCHAR(100) UNIQUE NOT NULL,
@@ -37,6 +40,7 @@ const initDB = async () => {
     await pool.query(
         `CREATE TABLE IF NOT EXISTS profile (
         id SERIAL PRIMARY KEY,
+        user_id UUID UNIQUE  REFERENCES users(user_id) ON DELETE CASCADE,
         firstName VARCHAR(50) NOT NULL,
         lastName VARCHAR(50) NOT NULL,
         address TEXT,
@@ -51,7 +55,34 @@ const initDB = async () => {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )`
-    )
+    );
+
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS payments (
+            id SERIAL PRIMARY KEY,
+
+            payment_id UUID DEFAULT uuid_generate_v4() UNIQUE, -- public reference
+
+            user_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+
+            amount NUMERIC(10,2) NOT NULL,
+            currency VARCHAR(10) DEFAULT 'INR',
+
+            payment_method VARCHAR(50), -- UPI, CARD, NETBANKING, CASH
+
+            payment_status VARCHAR(20) DEFAULT 'PENDING', 
+            -- PENDING, SUCCESS, FAILED, REFUNDED
+
+            transaction_id VARCHAR(100), -- from payment gateway
+
+            description TEXT,
+
+            paid_at TIMESTAMP, -- when payment completed
+
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        `);
 
     console.log("TABLES CREATED")
 }

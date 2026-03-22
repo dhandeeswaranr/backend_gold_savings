@@ -12,17 +12,17 @@ const router = Router();
 /** INSERT PROFILE */
 router.post('/profile', authMiddleware, async (req: AuthRequest, res: Response) => {
     try {
-        const { firstName, lastName, address, location, village, city, state, pin, landmark, scheme, isAccept } = req.body;
+        const {user_id, firstName, lastName, address, location, village, city, state, pin, landmark, scheme, isAccept } = req.body;
 
-        if (!firstName || !lastName) {
+        if (!user_id || !firstName || !lastName) {
             return res.status(400).json({ error: 'firstName and lastName are required' });
         }
 
         const result = await pool.query(
-            `INSERT INTO profile (firstName, lastName, address, location, village, city, state, pin, landmark, scheme, isAccept) 
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) 
+            `INSERT INTO profile (user_id, firstName, lastName, address, location, village, city, state, pin, landmark, scheme, isAccept) 
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) 
              RETURNING *`,
-            [firstName, lastName, address || null, location || null, village || null, city || null, state || null, pin || null, landmark || null, scheme || null, isAccept || false]
+            [user_id, firstName, lastName, address || null, location || null, village || null, city || null, state || null, pin || null, landmark || null, scheme || null, isAccept || false]
         );
 
         res.status(201).json({
@@ -41,7 +41,7 @@ router.put('/profile/:id', authMiddleware, async (req: AuthRequest, res: Respons
         const { firstName, lastName, address, location, village, city, state, pin, landmark, scheme, isAccept } = req.body;
 
         // Check if profile exists
-        const profileExists = await pool.query('SELECT id FROM profile WHERE id = $1', [id]);
+        const profileExists = await pool.query('SELECT * FROM profile WHERE user_id = $1', [id]);
         if (profileExists.rows.length === 0) {
             return res.status(404).json({ error: 'Profile not found' });
         }
@@ -60,7 +60,7 @@ router.put('/profile/:id', authMiddleware, async (req: AuthRequest, res: Respons
                  scheme = COALESCE($10, scheme),
                  isAccept = COALESCE($11, isAccept),
                  updated_at = CURRENT_TIMESTAMP
-             WHERE id = $12
+             WHERE user_id = $12
              RETURNING *`,
             [firstName, lastName, address, location, village, city, state, pin, landmark, scheme, isAccept, id]
         );
@@ -79,7 +79,7 @@ router.get('/profile/:id', authMiddleware, async (req: AuthRequest, res: Respons
     try {
         const { id } = req.params;
 
-        const result = await pool.query('SELECT * FROM profile WHERE id = $1', [id]);
+        const result = await pool.query('SELECT * FROM profile WHERE user_id = $1', [id]);
 
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Profile not found' });
