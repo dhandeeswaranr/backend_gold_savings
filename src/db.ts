@@ -2,13 +2,13 @@ import { Pool } from 'pg';
 /**L
  * Local database connection
  */
-/*const pool = new Pool({
-  host: 'localhost',
-  user: 'postgres',
-  password: 'postgres',
-  database: 'school',
-  port: 5432,
-});*/
+// const pool = new Pool({
+//   host: 'localhost',
+//   user: 'postgres',
+//   password: 'postgres',
+//   database: 'school',
+//   port: 5432,
+// });
 
 /**
  * Render.com database connection
