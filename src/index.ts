@@ -5,6 +5,7 @@ dotenv.config();
 import authRoutes from './routes/auth.route';
 import { User } from './types/user';
 import departmentRouter from './routes/department.rout';
+import profileRouter from './routes/profile.route';
 import cors from 'cors';
 
 
@@ -19,9 +20,11 @@ app.use(cors({
     methods: ["GET", "POST", "PUT", "DELETE"],
 }));
 app.use(express.json());
+const app_url = '/v1/api/';
 
 app.use('/api/auth', authRoutes);
-app.use('/v1/api/', departmentRouter)
+app.use(app_url, departmentRouter);
+app.use(app_url, profileRouter);
 
 app.listen(3000, '0.0.0.0', () => {
     console.log("SERVER LISTENING 3000");

@@ -2,13 +2,13 @@ import { Pool } from 'pg';
 /**L
  * Local database connection
  */
-/*const pool = new Pool({
-  host: 'localhost',
-  user: 'postgres',
-  password: 'postgres',
-  database: 'school',
-  port: 5432,
-});*/
+// const pool = new Pool({
+//   host: 'localhost',
+//   user: 'postgres',
+//   password: 'postgres',
+//   database: 'school',
+//   port: 5432,
+// });
 
 /**
  * Render.com database connection
@@ -23,5 +23,14 @@ const pool = new Pool({
     rejectUnauthorized: false
   }
 });
+
+// const pool = new Pool({
+//   host: 'pg.aivagan.com',
+//   user: 'aivaganc_pg',
+//   password: 'Vinodhan_84',
+//   database: 'aivaganc_pgtest',
+//   port: 5432,
+//    ssl: false
+// });
 
 export default pool;
