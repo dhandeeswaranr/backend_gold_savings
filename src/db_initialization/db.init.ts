@@ -3,8 +3,15 @@ import pool from '../db';
 const initDB = async () => {
     await pool.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
 
+    // Drop tables in reverse order to avoid foreign key constraints
+    await pool.query(`DROP TABLE IF EXISTS payments CASCADE`);
+    await pool.query(`DROP TABLE IF EXISTS profile CASCADE`);
+    await pool.query(`DROP TABLE IF EXISTS user_roles CASCADE`);
+    await pool.query(`DROP TABLE IF EXISTS roles CASCADE`);
+    await pool.query(`DROP TABLE IF EXISTS users CASCADE`);
+
     await pool.query(
-        `CREATE TABLE IF NOT EXISTS users (
+        `CREATE TABLE users (
         id SERIAL PRIMARY KEY,
         user_id UUID DEFAULT uuid_generate_v4() UNIQUE, 
         name VARCHAR(50) NOT NULL,
@@ -17,7 +24,7 @@ const initDB = async () => {
     );
 
     await pool.query(
-        `CREATE TABLE IF NOT EXISTS roles (
+        `CREATE TABLE roles (
         id SERIAL PRIMARY KEY,
         name VARCHAR(30) UNIQUE NOT NULL,
         email VARCHAR(100) UNIQUE NOT NULL,
@@ -26,7 +33,7 @@ const initDB = async () => {
     );
 
     await pool.query(
-        `CREATE TABLE IF NOT EXISTS user_roles (
+        `CREATE TABLE user_roles (
     user_id INT NOT NULL,
     role_id INT NOT NULL,
     PRIMARY KEY (user_id, role_id),
@@ -38,7 +45,7 @@ const initDB = async () => {
     )
 
     await pool.query(
-        `CREATE TABLE IF NOT EXISTS profile (
+        `CREATE TABLE profile (
         id SERIAL PRIMARY KEY,
         user_id UUID UNIQUE  REFERENCES users(user_id) ON DELETE CASCADE,
         firstName VARCHAR(50) NOT NULL,
@@ -58,7 +65,7 @@ const initDB = async () => {
     );
 
     await pool.query(`
-        CREATE TABLE IF NOT EXISTS payments (
+        CREATE TABLE payments (
             id SERIAL PRIMARY KEY,
 
             payment_id UUID DEFAULT uuid_generate_v4() UNIQUE, -- public reference
